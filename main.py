@@ -59,7 +59,33 @@ class App:
                     elif e.key == pg.K_SPACE:
                         App.game.send_input(WindowEvent.RELEASE_BUTTON_SELECT)
                 if e.type == pg.KEYDOWN:
-                    if e.mod & pg.KMOD_CTRL:
+                    if e.key == pg.K_F1:
+                        App.mode = 'code'
+                    elif e.key == pg.K_F2:
+                        App.mode = 'map'
+                    elif e.key == pg.K_F3:
+                        App.mode = 'music'
+                    elif e.key == pg.K_F4:
+                        App.mode = 'emulator'
+                    elif App.mode == 'emulator':
+                        if e.key == pg.K_RIGHT:
+                            App.game.send_input(WindowEvent.PRESS_ARROW_RIGHT)
+                        elif e.key == pg.K_LEFT:
+                            App.game.send_input(WindowEvent.PRESS_ARROW_LEFT)
+                        elif e.key == pg.K_UP:
+                            App.game.send_input(WindowEvent.PRESS_ARROW_UP)
+                        elif e.key == pg.K_DOWN:
+                            App.game.send_input(WindowEvent.PRESS_ARROW_DOWN)
+                        elif e.key == pg.K_z:
+                            App.game.send_input(WindowEvent.PRESS_BUTTON_A)
+                        elif e.key == pg.K_x:
+                            App.game.send_input(WindowEvent.PRESS_BUTTON_B)
+                        elif e.key == pg.K_RETURN:
+                            App.game.send_input(WindowEvent.PRESS_BUTTON_START)
+                        elif e.key == pg.K_SPACE:
+                            App.game.send_input(WindowEvent.PRESS_BUTTON_SELECT)
+                        continue
+                    elif e.mod & pg.KMOD_CTRL:
                         if e.key == pg.K_MINUS:
                             App.height -= 1 if (e.mod & pg.KMOD_SHIFT)!=0 else 6
                             App.font = App.createFont(App.height)
@@ -81,7 +107,7 @@ class App:
                             App.cursorline = 0
                             App.filename = 'new.asm'
                         continue
-                    if App.saving or App.loading:
+                    if (App.saving or App.loading) and App.mode == 'code':
                         if e.key == pg.K_BACKSPACE:
                             if len(App.filename)>0:
                                 App.filename = App.filename[:-1]
@@ -112,32 +138,6 @@ class App:
                             App.saving = False
                         elif e.unicode:
                             App.filename += e.unicode
-                        continue
-                    elif e.key == pg.K_F1:
-                        App.mode = 'code'
-                    elif e.key == pg.K_F2:
-                        App.mode = 'map'
-                    elif e.key == pg.K_F3:
-                        App.mode = 'music'
-                    elif e.key == pg.K_F4:
-                        App.mode = 'emulator'
-                    elif App.mode == 'emulator':
-                        if e.key == pg.K_RIGHT:
-                            App.game.send_input(WindowEvent.PRESS_ARROW_RIGHT)
-                        elif e.key == pg.K_LEFT:
-                            App.game.send_input(WindowEvent.PRESS_ARROW_LEFT)
-                        elif e.key == pg.K_UP:
-                            App.game.send_input(WindowEvent.PRESS_ARROW_UP)
-                        elif e.key == pg.K_DOWN:
-                            App.game.send_input(WindowEvent.PRESS_ARROW_DOWN)
-                        elif e.key == pg.K_z:
-                            App.game.send_input(WindowEvent.PRESS_BUTTON_A)
-                        elif e.key == pg.K_x:
-                            App.game.send_input(WindowEvent.PRESS_BUTTON_B)
-                        elif e.key == pg.K_RETURN:
-                            App.game.send_input(WindowEvent.PRESS_BUTTON_START)
-                        elif e.key == pg.K_SPACE:
-                            App.game.send_input(WindowEvent.PRESS_BUTTON_SELECT)
                         continue
                     if e.key == pg.K_BACKSPACE:
                         if len(App.code)>0:
