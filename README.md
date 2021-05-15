@@ -1,5 +1,5 @@
-# GB Dev kit
-GB Dev kit was a program that i hacked together in less than 3 hours, and was only a text processor.
+# GB IDLE
+GB IDLE (originally GB Dev kit) was a program that i hacked together in less than 3 hours, and was only a text processor.
 
 i picked it back up and continued the project by adding an emulator.
 
