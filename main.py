@@ -4,7 +4,7 @@ from pyboy import PyBoy, WindowEvent
 class App:
     def __init__(self):
         pg.init()
-        pg.display.set_caption('GB dev kit')
+        pg.display.set_caption('GB IDE')
         App.window = pg.display.set_mode((640, 480), pg.DOUBLEBUF)
         App.window.set_alpha(None)
         App.clock = pg.time.Clock()
