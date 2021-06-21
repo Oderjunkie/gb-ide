@@ -1,2 +1,2 @@
 #!/usr/bin/sh
-pip install pyboy pygame
+python -m pip install pyboy pygame
