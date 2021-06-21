@@ -39,5 +39,5 @@ Space: Select
 
 # To-Do:
 - Map editor
-- Sprite editor
+- ~~Sprite editor~~
 - Incorporate RGBDS assembler
