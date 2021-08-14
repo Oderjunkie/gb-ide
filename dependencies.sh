@@ -1,2 +1,2 @@
 #!/usr/bin/sh
-python -m pip install pyboy pygame
+pip install pyboy pygame Pygments

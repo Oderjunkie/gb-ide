@@ -93,12 +93,12 @@ class App:
             getattr(self, self.mode, self.code).draw(self.window, self.total, selectedcol, unselectedcol, bgcol)
             pg.display.update()
         pg.quit()
-if __name__=='__main__':
-    import threading
-    global app
+
+def main():
     app = App()
-    debug = False
-    if debug:
-        threading.Thread(target=app.run_wrap, daemon=True).start()
-    else:
-        app.run_wrap()
+    # import threading
+    # threading.Thread(target=app.run_wrap, daemon=True).start()
+    app.run_wrap()
+
+if __name__=='__main__':
+    main()

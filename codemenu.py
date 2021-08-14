@@ -1,5 +1,8 @@
 import pygame as pg
 from menu import Menu
+from pygments import highlight
+from pygments.lexers import get_lexer_for_filename
+from pygments.formatters import TerminalTrueColorFormatter
 
 class CodeMenu(Menu):
     def __init__(self, font):
@@ -9,6 +12,8 @@ class CodeMenu(Menu):
         self.cursorline = 0
         self.cursorcol = 0
         self.screencol = 0
+        self.lexer = get_lexer_for_filename(self.filename)
+        self.formatter = TerminalTrueColorFormatter()
     def event(self, e):
         if (self.saving or self.loading):
             if e.key == pg.K_BACKSPACE:
@@ -36,6 +41,7 @@ class CodeMenu(Menu):
                     except:
                         pass
                     self.saving = False
+                self.lexer = get_lexer_for_filename(self.filename)
             elif e.mod & pg.KMOD_CTRL and e.key == pg.K_c:
                 self.loading = False
                 self.saving = False
@@ -51,6 +57,7 @@ class CodeMenu(Menu):
             self.cursorcol = 0
             self.cursorline = 0
             self.filename = 'new.asm'
+            self.lexer = get_lexer_for_filename(self.filename)
         elif e.key == pg.K_BACKSPACE:
             if len(self.code)>0:
                 splitted = self.code.split('\n')
@@ -122,16 +129,50 @@ class CodeMenu(Menu):
         elif e.unicode not in '':
             splitted = self.code.split('\n')
             line = splitted[self.cursorline]
-            splitted[self.cursorline] = line[:self.cursorcol] + e.unicode + line[self.cursorcol:]
-            self.cursorcol += 1
+            char = e.unicode
+            istab = e.unicode == '\t'
+            if istab:
+                char = '    '
+            splitted[self.cursorline] = line[:self.cursorcol] + char + line[self.cursorcol:]
+            if istab:
+                self.cursorcol += 4
+            else:
+                self.cursorcol += 1
             self.code = '\n'.join(splitted)
+    def pretty_print_ansi_line(self, window, line, anti: bool, fgcol: tuple, bgcol: tuple, pos: tuple):
+        #return window.blit(self.font.render(line, anti, fgcol, bgcol), pos)
+        x, y = pos
+        blit = window.blit
+        render = self.font.render
+        segments = line.strip('\n').split('\x1b[')
+        #print(repr(segments))
+        for segment in segments:
+            if segment.startswith('38'):
+                _, __, r, g, text = segment.split(';', 4)
+                b, text = text.split('m', 1)
+                if ';' in b:
+                    b = b.split(';', 1)[0]
+                #print('{4!r}: {0!r}, {1!r}, {2!r} [{3!r}]'.format(r, g, b, text, segment))
+                r, g, b = int(r), int(g), int(b)
+                #print(repr(text))
+                rendered = render(text, anti, (r, g, b), bgcol)
+                blit(rendered, (x, y))
+                x += rendered.get_width()
+                continue
+            elif segment.startswith('39'):
+                _, segment = segment.split('m', 1)
+            rendered = render(segment, anti, fgcol, bgcol)
+            blit(rendered, (x, y))
+            x += rendered.get_width()
+        return pg.Rect(pos, self.font.size(line))
     def draw(self, window, total, selectedcol, unselectedcol, bgcol):
         width, height = self.font.size('M')
         for i, line in enumerate(self.code.split('\n')):
             #print(line)
-            rect = window.blit(self.font.render(line, False, (255, 255, 255), (0, 0, 0)), (width+height*3, height*(4+i)))
-            if not self.saving and total % 1 > 0.5 and i==self.cursorline:
+            rect = self.pretty_print_ansi_line(window, highlight(line, self.lexer, self.formatter), False, (255, 255, 255), (0, 0, 0), (width+height*3, height*(4+i)))
+            if not (self.saving or self.loading) and total % 1 > 0.5 and i==self.cursorline:
                 cursor = pg.Rect((0, 0), (width, height))
+                #print(rect.bottomleft)
                 cursor.bottomleft = rect.bottomleft
                 cursor.left += self.font.size(line[:self.cursorcol])[0]-(width*self.screencol)
                 pg.draw.rect(window, (255, 255, 255), cursor)

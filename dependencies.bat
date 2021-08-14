@@ -1,1 +1,1 @@
-@pip install pygame pyboy
+@pip install pygame pyboy Pygments
